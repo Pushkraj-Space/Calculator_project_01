@@ -9,8 +9,9 @@ public class cal extends Applet implements ActionListener{
     Label l1,l2;
     Button b[] = new Button[21];
     double[] ans = new double[2];
-    String str[] = {"7","8","9","*","C","4","5","6","-","\u221A","1","2","3","+","X!","0",".","/","=","Dev_Info"};
-    int i,x=100,y=100,k=0,j,dot=0,flag=0;
+    String str[] = {"7","8","9","<~~","C","4","5","6","-","\u221A","1","2","3","+","X!","0",".","/","*","="};
+    String s,s1,s2;
+    int i,x=100,y=100,k=0,j,dot=0,flag=0,f2=0,len=0;
     double prev=0,curr=0,temp=0,n;
     char ch='8';
     public void init(){
@@ -64,7 +65,7 @@ public class cal extends Applet implements ActionListener{
                 ch='+';
                 check();
             }
-            dot = 0;
+            dot = f2 = 0;
             flag=1;
             t2.setText(t2.getText() + str[13]);
             t1.setText("");
@@ -79,11 +80,12 @@ public class cal extends Applet implements ActionListener{
                 check();
             }
             dot = 0;
-            flag = 1;
             t2.setText(t2.getText() + str[8]);
+            if(f2==0)
             t1.setText("");
+            f2=0;
         }
-        if(e.getSource() == b[3]){
+        if(e.getSource() == b[18]){
             //multiply
             if(ch!='8' && ch!='*'){
                 check();
@@ -92,10 +94,11 @@ public class cal extends Applet implements ActionListener{
                 ch='*';
                 check();
             }
-            dot = 0;
             flag=1;
+            if(f2==0)
             t1.setText("");
-            t2.setText(t2.getText() + str[3]);
+            t2.setText(t2.getText() + str[18    ]);
+            dot = f2 = 0;
         }
         if(e.getSource() == b[17]){
             //division
@@ -106,31 +109,32 @@ public class cal extends Applet implements ActionListener{
                 ch='/';
                 check();
             }
-            dot = 0;
             flag=1;
+            if(f2==0)
             t1.setText("");
             t2.setText(t2.getText() + str[17]);
+            dot = f2 = 0;
         }
         if(e.getSource() == b[9]){
             //sqrt
-            dot = flag = 0;
+            dot = flag = f2 = 0;
             prev = Double.parseDouble(t1.getText());
             t1.setText(Double.toString(Math.sqrt(prev)));
             t2.setText(Double.toString(Math.sqrt(prev)));
         }
         if(e.getSource() == b[4]){
             //clear
-            dot = flag = 0;
+            dot = flag = f2 = 0;
             curr = prev = 0;
             ch = '8';
             t1.setText("");
             t2.setText("");
         }
-        if(e.getSource() == b[18]){
+        if(e.getSource() == b[19]){
             //equal (=)
             check();
             prev =0;
-            dot = flag = 0;
+            dot = flag = f2 = 0;
             ch='8';
             t1.setText(Double.toString(curr));
             t2.setText(Double.toString(curr));
@@ -147,11 +151,29 @@ public class cal extends Applet implements ActionListener{
                 t2.setText(t2.getText() + "!");
             else
                 t2.setText(t1.getText());
-            dot = flag = 0;
+            dot = flag = f2 = 0;
         }
-        if(e.getSource() == b[19]){
-            t2.setText("/* Devloped by Pushkraj */");
-            t1.setText("/* Devloped by Pushkraj */");
+        if(e.getSource() == b[3]){
+            s1 = t2.getText();
+            s2 = t1.getText();
+            len = s1.length();
+            if (s1 != null && len > 0) {
+                if(s1.charAt(len-1) == '+' || s1.charAt(len-1) == '-' || s1.charAt(len-1) == '/' || s1.charAt(len-1) == '*' || s1.charAt(len-1) == '!'){
+                    t2.setText("Operation is Already done Can't Erase :-(");
+                    for(i=0; i<100000; i++){
+                        for(j=0; j<100000; j++);
+                    }
+                    t2.setText(s1);
+                }else{
+                    s1 = s1.substring(0, s1.length() - 1);
+                    t2.setText(s1);
+                }
+            }
+            len = s2.length();
+            if(s2 != null && len > 0){
+                s2 = s2.substring(0, s2.length() - 1);
+                t1.setText(s2);
+            }
         }
     }
     double check(){
@@ -163,7 +185,14 @@ public class cal extends Applet implements ActionListener{
             curr = prev - Double.parseDouble(t1.getText());
             else{
                 flag=1;
-                curr = Double.parseDouble(t1.getText());
+                s = t1.getText();
+                if(s.isEmpty() == true){
+                    t1.setText("-");
+                    f2=1;
+                    ch = '8';
+                    flag=0;
+                }else
+                    curr = Double.parseDouble(t1.getText());
             }
             prev = curr;
         }else if(ch == '*'){
@@ -171,7 +200,13 @@ public class cal extends Applet implements ActionListener{
                 curr = prev * Double.parseDouble(t1.getText());
             }else{
                 flag=1;
-                curr = Double.parseDouble(t1.getText());
+                s = t1.getText();
+                if(s.isEmpty() == true){
+                    t1.setText("Invalid Syntax !");
+                    t2.setText("Invalid Syntax !");
+                    f2=1;
+                }else
+                    curr = Double.parseDouble(t1.getText());
             }
             prev = curr;
         }else if(ch=='/'){
@@ -179,6 +214,12 @@ public class cal extends Applet implements ActionListener{
                 curr = prev / Double.parseDouble(t1.getText());
             }else{
                 flag=1;
+                s = t1.getText();
+                if(s.isEmpty() == true){
+                    t1.setText("Invalid Syntax !");
+                    t2.setText("Invalid Syntax !");
+                    f2=1;
+                }else
                 curr = Double.parseDouble(t1.getText());
             }
             prev = curr;
